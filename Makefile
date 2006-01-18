@@ -19,7 +19,7 @@ DEBUG?=1
 
 ifneq ($(DEBUG),) # {{{
 	CFLAGS+=-std=c99 -pedantic-errors
-	CFLAGS+=-ggdb
+	CFLAGS+=-ggdb3
 	CFLAGS+=-Wall -W -Wchar-subscripts -Wmissing-prototypes
 	CFLAGS+=-Wmissing-declarations -Wredundant-decls
 	CFLAGS+=-Wstrict-prototypes -Wshadow -Wbad-function-cast
