@@ -35,7 +35,8 @@ ifneq ($(PROFILING),) # {{{
 endif
 # }}}
 
-all: $(TARGET)
+all: $(TARGET) $(TARGET).stripped
+	ls -l $^
 
 clean:
 	$(RM) $(TARGET) $(OBJECTS)
