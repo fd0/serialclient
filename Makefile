@@ -11,16 +11,12 @@ OBJECTS+=$(patsubst %.c,%.o,$(shell echo *.c))
 HEADERS+=$(shell echo *.h)
 TARGET?=serialclient
 
-
 LDFLAGS+=
-CFLAGS+=
-
-DEBUG?=1
+CFLAGS+=-std=c99 -pedantic-errors -Wall -W
 
 ifneq ($(DEBUG),) # {{{
-	CFLAGS+=-std=c99 -pedantic-errors
 	CFLAGS+=-ggdb3
-	CFLAGS+=-Wall -W -Wchar-subscripts -Wmissing-prototypes
+	CFLAGS+=-Wchar-subscripts -Wmissing-prototypes
 	CFLAGS+=-Wmissing-declarations -Wredundant-decls
 	CFLAGS+=-Wstrict-prototypes -Wshadow -Wbad-function-cast
 	CFLAGS+=-Winline -Wpointer-arith -Wsign-compare
