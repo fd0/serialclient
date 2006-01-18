@@ -39,7 +39,7 @@ all: $(TARGET) $(TARGET).stripped
 	ls -l $^
 
 clean:
-	$(RM) $(TARGET) $(OBJECTS)
+	$(RM) $(TARGET) $(TARGET).stripped $(OBJECTS)
 
 .PHONY: clean all
 
