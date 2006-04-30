@@ -333,6 +333,11 @@ void terminal_setup(void)
         attr.c_iflag &= ~(IXON|IXOFF|IXANY);
     #endif
 
+    /* disable line buffer, local echo, cr->nl translation */
+    attr.c_lflag &= ~ICANON;
+    attr.c_lflag &= ~ECHO;
+    attr.c_iflag &= ~ICRNL;
+
     int mcs = 0;
     ioctl(global.fd, TIOCMGET, &mcs);
     mcs |= TIOCM_RTS;
