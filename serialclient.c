@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     tcgetattr(STDIN_FILENO, &global.restore);
     atexit(cleanup);
     terminal_setup();
-    
+
     for (;;) {
         fd_set rfds;
         int retval, n;
@@ -308,35 +308,19 @@ void terminal_setup(void)
 
     /* serial */
     tcgetattr(global.fd, &attr);
-    /* set baudrate */
-    cfsetispeed(&attr, global.baudrate);
-    cfsetospeed(&attr, global.baudrate);
 
-    /* FIXME: copied from minicom, sets flow control, 8N1, ...? */
-    attr.c_cflag = (attr.c_cflag & ~CSIZE) | CS8;
-
-    attr.c_iflag = IGNBRK;
+    /* set baudrate, 8n1, as-raw-as-possible ... */
+    attr.c_cflag = CS8 | CREAD | CLOCAL;
     attr.c_lflag = 0;
+
+    attr.c_iflag = IGNBRK | IMAXBEL;
     attr.c_oflag = 0;
-    attr.c_cflag |= CLOCAL | CREAD;
 
     attr.c_cc[VMIN] = 1;
     attr.c_cc[VTIME] = 5;
 
-    attr.c_cflag &= ~(PARENB | PARODD);
-    attr.c_cflag &= ~CSTOPB;
-
-    /* software flow control */
-    #if 1
-        attr.c_iflag |= IXON | IXOFF;
-    #else
-        attr.c_iflag &= ~(IXON|IXOFF|IXANY);
-    #endif
-
-    /* disable line buffer, local echo, cr->nl translation */
-    attr.c_lflag &= ~ICANON;
-    attr.c_lflag &= ~ECHO;
-    attr.c_iflag &= ~ICRNL;
+    cfsetispeed(&attr, global.baudrate);
+    cfsetospeed(&attr, global.baudrate);
 
     int mcs = 0;
     ioctl(global.fd, TIOCMGET, &mcs);
