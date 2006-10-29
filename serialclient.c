@@ -309,7 +309,7 @@ void terminal_setup(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &attr);
 
     /* serial */
-    tcgetattr(global.fd, &attr);
+    memcpy(&attr, &global.restore_serial, sizeof(struct termios));
 
     /* set baudrate, 8n1, as-raw-as-possible ... */
     attr.c_cflag = CS8 | CREAD | CLOCAL;
