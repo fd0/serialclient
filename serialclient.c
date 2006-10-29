@@ -36,7 +36,8 @@
 
 struct global_t
 /*{{{*/ {
-    struct termios restore;
+    struct termios restore_stdin;
+    struct termios restore_serial;
     char *argv0;
     unsigned int stdin_failed : 1;
     int fd;
@@ -76,7 +77,8 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    tcgetattr(STDIN_FILENO, &global.restore);
+    tcgetattr(STDIN_FILENO, &global.restore_stdin);
+    tcgetattr(global.fd, &global.restore_serial);
     atexit(cleanup);
     terminal_setup();
 
@@ -290,10 +292,10 @@ void options(int argc, char *argv[])
 
 void cleanup(void)
 /*{{{*/ {
+    terminal_restore();
     if (global.fd != -1) {
         close(global.fd);
     }
-    terminal_restore();
 } /*}}}*/
 
 void terminal_setup(void)
@@ -301,7 +303,7 @@ void terminal_setup(void)
     struct termios attr;
 
     /* stdin: disable line buffer, local echo */
-    memcpy(&attr, &global.restore, sizeof(struct termios));
+    memcpy(&attr, &global.restore_stdin, sizeof(struct termios));
     attr.c_lflag &= ~ICANON;
     attr.c_lflag &= ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &attr);
@@ -332,7 +334,9 @@ void terminal_setup(void)
 
 void terminal_restore(void)
 /*{{{*/ {
-    tcsetattr(STDIN_FILENO, 0, &global.restore);
+    tcsetattr(STDIN_FILENO, 0, &global.restore_stdin);
+    if (global.fd != -1)
+        tcsetattr(global.fd, 0, &global.restore_serial);
 } /*}}}*/
 
 void print(unsigned char *buf, size_t count, char prefix)
